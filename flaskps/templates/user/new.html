@@ -1,0 +1,120 @@
+{% extends "layout.html" %}
+
+{% block title %} Nuevo usuario {% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block header %}
+    {% include 'shared/nav_config.html' %}
+{% endblock %}
+
+{% block section %}
+    <form class="m-4" action="{{ url_for('user_create') }}" method="POST">
+        <h4 class="font-weight-bold text-right">Crear usuario</h4>
+        <hr id="lineaDivision">
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label class="form-control-label" for="first_name">Nombre</label>
+                    {% if nombre is not none %}
+                        <input type="text" placeholder="Ingresa un nombre" class="form-control" name="first_name"
+                        id="first_name"
+                        required value="{{ nombre }}">
+                    {% else %}
+                        <input type="text" placeholder="Ingresa un nombre" class="form-control" name="first_name"
+                        id="first_name"
+                        required>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label class="form-control-label" for="last_name">Apellido</label>
+                    {% if apellido is not none %}
+                        <input type="text" placeholder="Ingresa un apellido" class="form-control" name="last_name"
+                           id="last_name" required value="{{ apellido }}">
+                    {% else %}
+                        <input type="text" placeholder="Ingresa un apellido" class="form-control" name="last_name"
+                           id="last_name" required>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label class="form-control-label" for="username">Nombre de usuario</label>
+                    {% if usuario is not none %}
+                        <input type="text" placeholder="Ingresa un nombre de usuario" class="form-control" name="username"
+                           id="username" required value="{{ usuario }}">
+                    {% else %}
+                        <input type="text" placeholder="Ingresa un nombre de usuario" class="form-control" name="username"
+                        id="username" required value="{{ usuario }}">
+                    {% endif %}
+
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label class="form-control-label" for="contraseñaRegistrar">Contraseña</label>
+                    <input type="password" placeholder="Ingresa una contraseña" class="form-control"
+                           id="contraseñaRegistrar" name="password" required>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label class="form-control-label" for="correoElectronicoRegistrar">Correo
+                        electrónico</label>
+                    {% if correo is not none %}
+                        <input type="email" placeholder="Ingresa un correo electrónico" class="form-control"
+                           id="correoElectronicoRegistrar" name="email" required value="{{ correo }}">
+                    {% else %}
+                    <input type="email" placeholder="Ingresa un correo electrónico" class="form-control"
+                    id="correoElectronicoRegistrar" name="email" required >
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <h4>Roles</h4>
+                    {% for rol in roles %}
+                        {% if 'ADMIN' in rol.nombre | upper() %}
+                            <div class="custom-control custom-checkbox d-inline mx-2">
+                                <input type="checkbox" class="custom-control-input" id="rol{{ rol.id }}" value="{{ rol.id }}" checked>
+                                <label class="custom-control-label" for="rol{{ rol.id }}">{{ rol.nombre | upper() }}</label>
+                            </div>
+                        {% else %}
+                        <div class="custom-control custom-checkbox d-inline mx-2">
+                            <input type="checkbox" class="custom-control-input" id="rol{{ rol.id }}" value="{{ rol.id }}">
+                            <label class="custom-control-label" for="rol{{ rol.id }}">{{ rol.nombre | upper() }}</label>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% if mensaje is not none %}
+        <div class="row my-2">
+          <div class="col-md-12 col-lg-6">
+            <text class="text-danger">{{ mensaje }}</text>
+          </div>
+        </div>
+      {% endif %}
+        <div class="m-0 p-0 rounded-bottom">
+            <button type="submit" class="btn btn-danger btn-lg btn-block">Aceptar</button>
+        </div>
+    </form>
+
+    {#{% include 'shared/contacto.html' %}#}
+
+{% endblock %}
+
+{% block footer %}
+    {% include 'shared/footer.html' %}
+{% endblock %}

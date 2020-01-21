@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+{% block title %}Actualizar instrumento{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block header %}
+  {% include 'shared/nav_config.html' %}
+{% endblock %}
+{% block section %}
+
+<form class="m-4" action="{{ url_for('instrument_save') }}" method="POST" enctype="multipart/form-data">
+    <h4 class="font-weight-bold text-right">Actualizar instrumento</h4>
+    <hr id="lineaDivision">
+    <div class="row">
+        <div class="col-6">
+            <div class="form-group">
+                <label class="form-control-label" for="nombre">Nombre</label>
+                <input type="text" placeholder="Ingresa un nombre" value="{{ nombre }}" class="form-control" name="nombre" id="nombre"
+                    required>
+            </div>
+        </div>
+        <div class="col-6">
+            <label for="tipo">Tipo de instrumento</label>
+            <select class="form-control" id="tipo" name="tipo">
+                <option>{{ tipo.nombre }}</option>
+                {% for tipoInstrumento in tipos %}
+                <option>{{ tipoInstrumento.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+                <div class="form-group">
+                        <label>Imagen actual</label>
+                        <img class="img-thumbnail img-custom d-block mx-2" src="{{ ruta }}">
+                </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="form-group">
+                <label for="image">Selecciona una imagen</label>
+                <input type="file" class="form-control-file" id="image" name="image">
+            </div>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="form-group">
+            <input type="hidden" value="{{ id }}" maxlength="10" class="form-control" name="id" id="id">
+        </div>
+    </div>
+    <div class="row rounded-bottom">
+        <div class="col-4">
+            <a class="btn btn-danger btn-lg btn-block" href="{{ url_for('instrument_index') }}">Volver</a>
+        </div>
+        <div class="col-8">
+            <button type="submit" class="btn btn-warning btn-lg btn-block">Aceptar</button>
+        </div>
+    </div>
+</form>
+{% endblock %}

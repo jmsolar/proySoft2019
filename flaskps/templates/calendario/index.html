@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block title %}Calendario{% endblock %}
+
+{% block head %}
+  {{ super() }}
+{% endblock %}
+
+{% block header %}
+  {% include 'shared/nav_config.html' %}
+{% endblock %}
+
+{% block section %}
+<h1>Calendario</h1>
+<section class="container-fluid mt-3 mb-5">
+    <iframe src="https://calendar.google.com/calendar/embed?height=600&amp;wkst=1&amp;bgcolor=%23ffffff&amp;ctz=America%2FArgentina%2FBuenos_Aires&amp;src=YjdsaXJmMGUwMmVpa2ZxM2d0bjNiY3RqbjRAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&amp;src=ZXMuYXIjaG9saWRheUBncm91cC52LmNhbGVuZGFyLmdvb2dsZS5jb20&amp;color=%239D7000&amp;color=%231F753C" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+</section>
+
+{% endblock %}

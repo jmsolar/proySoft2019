@@ -1,0 +1,140 @@
+{% extends "layout.html" %}
+
+{% block title %}Docentes{% endblock %}
+
+{% block head %}
+  {{ super() }}
+{% endblock %}
+
+{% block header %}
+  {% include 'shared/nav_config.html' %}
+{% endblock %}
+
+{% block section %}
+	
+	<section>
+    <div class="jumbotron mb-0 text-right">
+        <h1 class="display-3">Módulo Docentes</h1>
+        <p class="lead">Gestion de tus docentes </p>
+        <hr class="my-4">
+        <p>Desde este apartado podés gestionar tus docentes con pocos clicks</p>
+    </div>
+</section>
+
+<div class="container-fluid mt-3 mb-5">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+      	<th scope="col">Dni</th>
+        <th scope="col">Apellido</th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Fecha nacimiento</th>
+        <th scope="col">Localidad</th>
+        <th scope="col">Telefono</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for docente in docentes %}
+      <tr>
+      	<td>{{ docente.numero }}</td>
+        <td>{{ docente.apellido }}</td>
+        <td>{{ docente.nombre }}</td>
+        <td>{{ docente.fecha_nac }}</td>
+        <td>{{ localidades[loop.index-1] }}</td>
+        <td>{{ docente.tel }}</td>
+        <td>
+          {% if has_permission("docente_show") %}
+            <a href="/docentes/show/{{docente.id}}">
+              <button type="button" class="btn btn-default btn-sm">
+                <span class="glyphicon-md">Ver</span>
+              </button>
+            </a>
+          {% endif %}
+          {% if has_permission("docente_update") %}
+            <a href="/docentes/editar/{{docente.id}}">
+              <button type="button" class="btn btn-default btn-sm">
+                <span class="icon-pencil glyphicon-md"></span>
+              </button>
+            </a>
+          {% endif %}
+          {% if has_permission("docente_destroy") %}
+            <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#ModalEliminar"
+              onclick="seleccionarDocente({{ docente.id }})">
+              <span class="icon-bin glyphicon-md"></span>
+            </button>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="row">
+    <div class="col-4">
+      <a class="btn btn-danger btn-lg btn-block" href="{{ url_for('home') }}">Volver</a>
+    </div>
+
+    <div class="col-8">
+      {% if has_permission("docente_new") %} <a class="btn btn-success btn-lg btn-block" href="{{ url_for('teacher_new') }}">Nuevo</a> {% endif %}
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="ModalEliminar" tabindex="-1" role="dialog" aria-labelledby="ModalEliminar"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Eliminar</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          ¿Esta Seguro que desea Eliminar?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+          <a href="">
+            <button type="button" class="btn btn-primary" onclick="eliminarSeleccionado()">
+              <span class="spinner-border spinner-border-sm eliminar-loader" role="status" aria-hidden="true"></span>
+              Eliminar
+            </button>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+    let id_teacher_seleccionado = ""
+
+    $(document).ready(function () {
+       $(".eliminar-loader").hide();
+    });
+
+    function seleccionarDocente(id){
+        id_teacher_seleccionado = id;
+        console.log(id_teacher_seleccionado)
+    }
+
+    function eliminarSeleccionado() {
+        $(".eliminar-loader").show();
+        $.ajax({
+            type: "GET",
+            url: "docentes/eliminar/" + id_teacher_seleccionado,
+            async: false,
+            success: function(){
+                $(".eliminar-loader").hide();
+            },
+            error: function(){
+                $(".eliminar-loader").hide();
+            }
+        });
+    }
+    </script>
+{% endblock %}

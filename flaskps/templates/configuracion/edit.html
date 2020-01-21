@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% block title %} Editar preferencias {% endblock %}
+
+{% block head %}
+  {{ super() }}
+{% endblock %}
+
+{% block header %}
+  {% include 'shared/nav_config.html' %}
+{% endblock %}
+
+{% block section %}
+
+  <section id="configuracion" class="p-4">
+    <div class="row">
+      <div class="col-12">
+        <form action="{{ url_for('configuracion_save') }}" method="POST">
+          <h4 class="font-weight-bold text-right">Editar</h4>
+          <hr id="lineaDivision">
+          <div class="form-group row">
+            <label for="titulo" class="col-sm-2 col-form-label">Título</label>
+            <div class="col-sm-10">
+              <input name="titulo" type="text" class="form-control" id="titulo" value="{{ configuracion.titulo }}">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="descripcion" class="col-sm-2 col-form-label">Breve descripción</label>
+            <div class="col-sm-10">
+              <textarea name="descripcion" class="form-control" id="descripcion" rows="4">{{ configuracion.descripcion }}</textarea>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="correo" class="col-sm-2 col-form-label">Correo electrónico de contacto</label>
+            <div class="col-sm-10">
+              <input name="email" type="email" class="form-control" id="correo" value="{{ configuracion.email }}">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="habilitado" class="col-sm-2 col-form-label">Sitio habilitado</label>
+            <div class="col-sm-1 checkbox">
+              <input name="habilitado" type="checkbox" class="form-control" id="habilitado" {% if configuracion.habilitado %}checked{% endif %}>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="elementosPagina" class="col-sm-2 col-form-label">Cantidad de elementos por página</label>
+            <div class="col-sm-10">
+              <input name="registros_por_pagina" type="number" min="0" class="form-control" id="elementosPagina" value="{{ configuracion.registros_por_pagina }}">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6">
+                <button type="submit" class="btn btn-success btn-lg btn-block">Aceptar</button>
+            </div>
+            <div class="col-6">
+                <a class="btn btn-danger btn-lg btn-block" href="{{ url_for('configuration_index') }}">Cancelar</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}

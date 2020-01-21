@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block title %} Sitio deshabilitado {% endblock %}
+
+{% block head %}
+  {{ super() }}
+{% endblock %}
+
+{% block section %}
+
+  <section id="mantainerSec">
+      <div class="mantainerCont">
+        <div class="error">
+            <h3 id="mantainerError" class="display-3 text-center font-weight-bolder">El sitio se encuentra en mantenimiento</h3>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+
+{% block title %} Editar usuario {% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block header %}
+    {% include 'shared/nav_config.html' %}
+{% endblock %}
+
+{% block section %}
+    <form class="m-4" action="{{ url_for('user_save') }}" method="POST">
+        <h4 class="font-weight-bold text-right">Editar usuario</h4>
+        <hr id="lineaDivision">
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label class="form-control-label" for="first_name">Nombre</label>
+                    <input type="text" placeholder="Ingresa un nombre" class="form-control" name="first_name"
+                           id="first_name" value="{{aUser.first_name}}" 
+                           required>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label class="form-control-label" for="last_name">Apellido</label>
+                    <input type="text" placeholder="Ingresa un apellido" class="form-control" name="last_name"
+                           id="last_name" required value="{{aUser.last_name}}">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label class="form-control-label" for="username">Nombre de usuario</label>
+                    <input type="text" placeholder="Ingresa un nombre de usuario" class="form-control" name="username"
+                           id="username" value="{{aUser.username}}" required>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label class="form-control-label" for="contraseñaRegistrar">Contraseña</label>
+                    <input type="password" placeholder="Ingresa una contraseña" class="form-control"
+                           id="contraseñaRegistrar" name="password" value="{{aUser.password}}" required>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label class="form-control-label" for="correoElectronicoRegistrar">Correo
+                        electrónico</label>
+                    <input type="text" placeholder="Ingresa un correo electrónico" class="form-control"
+                           id="correoElectronicoRegistrar" name="email" value="{{aUser.email}}" required>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <p>Roles</p>
+                    {% for rol in roles %}
+                        <label class="form-control-label" for="rol{{ rol.id }}">{{ rol.nombre | upper() }}</label>
+                        <input type="checkbox" name="rol" id="rol{{ rol.id }}" value="{{ rol.id }}" {% if rol in aUser.roles %}checked{% endif %}>
+                        <br>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <input type="hidden"  value="{{ aUser.id }}" class="form-control" name="id" id="id">
+        <div class="m-0 p-0 rounded-bottom">
+            <button type="submit" class="btn btn-danger btn-lg btn-block">Aceptar</button>
+        </div>
+    </form>
+
+    {#{% include 'shared/contacto.html' %}#}
+
+{% endblock %}
+
+{% block footer %}
+    {% include 'shared/footer.html' %}
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+
+{% block title %}Asistencia | {{ horario.taller.nombre }}{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block header %}
+    {% include 'shared/nav_config.html' %}
+{% endblock %}
+
+{% block section %}
+    <div class="container mt-4 mb-3">
+        <h3 class="font-weight-bold">Asistencia de {{ horario.taller.nombre }} | {{ hoy.strftime("%d/%m/%Y") }}</h3>
+        <br>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="thead-dark">
+                <tr>
+                    <th>Estudiante</th>
+                    <th>Presente</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for estudiante in estudiantes %}
+                    <tr>
+                        <td>{{ estudiante.nombre }} {{ estudiante.apellido }}</td>
+                        <td><input class="custom-checkbox" type="checkbox" name="presente" value="{{ estudiante.id }}"
+                                   checked></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary" onclick="enviarAsistencia()">Enviar asistencia</button>
+        </div>
+    </div>
+    <div class="overlay">
+        <div class="w-100 h-100 d-flex justify-content-center align-items-center text-white">
+            <div class="spinner-border" style="width:4rem; height: 4rem;">
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+    {% include 'shared/footer.html' %}
+{% endblock %}
+
+{% block script %}
+    <script>
+        $("tr").click(function () {
+            $(this).find("input").prop("checked", !$(this).find("input").prop("checked"));
+        });
+
+        function validarSeleccion() {
+            let ids = "";
+            $("input[name=presente]").each(function (id, value) {
+                if (value.checked) {
+                    if (ids !== "") ids += ",";
+                    ids += value.value;
+                }
+            });
+            return ids;
+        }
+
+        function enviarAsistencia() {
+            let ids = validarSeleccion();
+            let data = {
+                "ids_estudiantes": ids,
+                "horario": {{ horario.id }},
+                "fecha": {{ hoy.strftime("%Y%m%d") }}
+            };
+            $(".overlay").fadeIn(300);
+            $.ajax({
+                url: "/api/asistencia",
+                method: 'POST',
+                data: data,
+                success: function (res) {
+                    if (res["status"] === 200) {
+                        window.location.replace('{{ url_for("ciclo_lectivo_taller",
+                        id_ciclo=horario.ciclo_lectivo.id, id_taller=horario.taller.id) }}')
+                    } else {
+                        $(".overlay").fadeOut(300);
+                        alert(res["message"]);
+                    }
+                },
+                error:function() {
+                    $(".overlay").fadeOut(300);
+                    alert("Ha ocurrido un error");
+                }
+            });
+            console.log(data);
+
+        }
+    </script>
+{% endblock %}

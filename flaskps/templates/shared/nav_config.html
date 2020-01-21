@@ -1,0 +1,39 @@
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-warning py-4">
+        <a class="navbar-brand font-weight-bolder" href="{{ url_for('home') }}"><img
+                src="{{ url_for('static', filename='img/logo.png') }}" class="mr-2" alt="Logo">Orquesta
+            Escuela de
+            Berisso</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMenu"
+            aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarMenu">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="administracionNav" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Administración
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="administracionNav">
+                      {% if has_permission("configuracion_index") %}<a class="dropdown-item" href="{{url_for('configuration_index') }}">Configuración</a>{% endif %}
+                      {% if has_permission("usuario_index") %}<a class="dropdown-item" href="{{ url_for('user_index') }}">Usuarios</a>{% endif %}
+                      {% if has_permission("docente_index") or has_permission("preceptor_index") %}<a class="dropdown-item" href="{{ url_for('student_index') }}">Estudiantes</a>{% endif %}
+                      {% if has_permission("administracion_index")%}<a class="dropdown-item" href="{{ url_for('ciclo_lectivo_index') }}">Ciclos lectivos</a>{% endif %}
+                      {% if has_permission("docente_index") %}<a class="dropdown-item" href="{{ url_for('teacher_index') }}">Docentes</a>{% endif %}
+                      {% if has_permission("docente_index") %}<a class="dropdown-item" href="{{ url_for('instrument_index') }}">Instrumentos</a>{% endif %}
+                      <a class="dropdown-item" href="/calendario">Calendario</a>
+                    </div>
+                  </li>
+            </ul>
+            {% if not mostrarBotonLogin %}
+                <div class="my-2 my-lg-0">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                            <a id="loginNav" class="btn btn-outline-secondary btn-lg" href="{{ url_for('auth_logout') }}">Cerrar sesión</a>
+                        </li>
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </nav>
+</header>

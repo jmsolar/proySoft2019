@@ -1,0 +1,111 @@
+{% extends "layout.html" %}
+{% block title %}Docente{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block header %}
+  {% include 'shared/nav_config.html' %}
+{% endblock %}
+{% block section %}
+<h1>Docente</h1>
+<form class="m-4" action="{{ url_for('teacher_save') }}" method="POST">
+    <h4 class="font-weight-bold text-right">Crear Docente</h4>
+    <hr id="lineaDivision">
+    <div class="row">
+        <div class="col-6">
+            <div class="form-group">
+                <label class="form-control-label" for="nombre">Nombre</label>
+                <input type="text" disabled placeholder="Ingresa un nombre" value="{{docente.nombre}}" class="form-control" name="nombre" id="nombre"
+                    required>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="form-group">
+                <label class="form-control-label" for="apellido">Apellido</label>
+                <input type="text" disabled placeholder="Ingresa un apellido" value="{{docente.apellido}}" class="form-control" name="apellido" id="apellido"
+                    required>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <div class="form-group">
+                <label class="form-control-label" for="fecha_nac">Fecha nacimiento</label>
+                <input type="date" class="form-control" disabled value="{{docente.fecha_nac}}" name="fecha_nac" id="fecha_nac" required>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="form-group">
+                <label for="genero">Género</label>
+                <select class="form-control" id="genero" disabled name="genero">
+                    <option value="">Selecciona un género</option>
+                    {% for genero in generos %}
+                    <option value="{{genero.id}}" {% if docente.genero_id == genero.id %} selected="selected" {% endif %}>{{ genero.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+    	<div class="col-6">
+            <div class="form-group">
+                <label for="localidad">Localidad</label>
+                <select class="form-control" id="localidad" disabled name="localidad">
+                    <option value="">Selecciona una localidad</option>
+                    {% for localidad in localidades %}
+                    <option value="{{localidad.id}}" {% if docente.localidad_id == localidad.id|int %} selected="selected" {% endif %}>{{ localidad.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="form-group">
+                <label class="form-control-label" for="domicilio">Domicilio</label>
+                <input type="text" placeholder="Ingresa un domicilio" disabled value="{{docente.domicilio}}" class="form-control" id="domicilio"
+                    name="domicilio" required>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <div class="form-group">
+                <label for="tipo_doc">Tipo de documento</label>
+                <select class="form-control" id="tipo_doc" disabled name="tipo_doc">
+                    <option>Selecciona un tipo de documento</option>
+                    {% for tipoDoc in tiposDoc %}
+                    <option value="{{tipoDoc.id}}" {% if docente.tipo_doc_id == tipoDoc.id|int %} selected="selected" {% endif %}>{{ tipoDoc.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="form-group">
+                <label class="form-control-label" for="numero">Número de documento</label>
+                <input type="number" maxlength="8" disabled value="{{docente.numero}}" placeholder="Ingresa un número de documento" class="form-control" id="numero"
+                    name="numero" required>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <div class="form-group">
+                <label class="form-control-label" for="tel">Teléfono</label>
+                <input type="number" placeholder="Ingresa un número telefónico" disabled value="{{docente.tel}}" maxlength="10" class="form-control" name="tel" id="tel"
+                    required>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="form-group">
+                <input type="hidden"  value="{{docente.id}}"  disabled maxlength="10" class="form-control" name="id" id="id"
+                    required>
+            </div>
+        </div>
+    </div>
+    <div class="m-0 p-0 rounded-bottom">
+        <div class="col-12">
+            <a class="btn btn-danger btn-lg btn-block" href="{{ url_for('teacher_index') }}">Volver</a>
+        </div>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,182 @@
+{% extends "layout.html" %}
+
+{% block title %}Agregar estudiante | {{ taller.nombre }}{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block header %}
+    {% include 'shared/nav_config.html' %}
+{% endblock %}
+
+{% block section %}
+    <div class="container p-3">
+        <h2 class="font-weight-bolder mb-5">Agregar estudiante a {{ taller.nombre }}</h2>
+        <div class="form-group">
+            <label for="nucleo-busqueda" class="control-label">Seleccione un núcleo</label>
+            <select id="nucleo-busqueda" class="form-control"
+                    data-source="/api/nucleos?ciclo_lectivo={{ ciclo_lectivo.id }}&taller={{ taller.id }}"
+                    data-valueKey="id" data-displayKey="nombre" data-placeholder="Seleccione un nucleo"></select>
+            <p id="error-nucleo" class="error-text text-danger">Debe seleccionar un nucleo</p>
+        </div>
+        <div id="dia" class="form-group">
+            <label for="dia_semana-busqueda" class="control-label">Seleccione un día</label>
+            <select id="dia_semana-busqueda" class="form-control"
+                    data-source=""
+                    data-valueKey="id" data-displayKey="dia" data-placeholder="Seleccione un dia"></select>
+            <p id="error-dia" class="error-text text-danger">Debe seleccionar un dia</p>
+        </div>
+        <div id="search-filter">
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label for="apellido">Apellido</label>
+                    <input id="apellido" class="form-control" type="text" name="apellido"
+                           placeholder="Ingrese un apellido">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="numero">Numero de documento</label>
+                    <input id="numero" class="form-control" type="number" name="numero"
+                           placeholder="Ingrese un numero de documento">
+                </div>
+            </div>
+            <button class="btn btn-secondary" type="button" onclick="buscar()">Buscar</button>
+            <hr>
+            <table class="table" id="resultado">
+                <thead class="table-sm">
+                <th>Num. Doc</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th></th>
+                </thead>
+            </table>
+        </div>
+        <p id="error-estudiante" class="error-text text-danger">Debe seleccionar a un estudiante</p>
+        <div class="btn-block p-2 d-block">
+            <a class="btn btn-success d-block d-sm-inline mt-sm-0 mt-2 cursor-handler text-white"
+               onclick="agregarEstudiante()">
+                Agregar estudiante
+            </a>
+            <a class="btn btn-secondary d-block float-sm-right d-sm-inline mt-sm-0 mt-2 mb-sm-0 mb-2"
+               href="{{ url_for('ciclo_lectivo_taller', id_ciclo=ciclo_lectivo.id, id_taller=taller.id) }}">
+                Volver
+            </a>
+        </div>
+    </div>
+    <div class="overlay">
+        <div class="w-100 h-100 d-flex justify-content-center align-items-center text-white">
+            <div class="spinner-border" style="width:4rem; height: 4rem;">
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+    {% include 'shared/footer.html' %}
+{% endblock %}
+
+{% block script %}
+    <script>
+        let search_params;
+        let result_table;
+        $(document).ready(function () {
+            $(".error-text").hide();
+            $("#resultado").hide();
+            init_table_result("/api/estudiantes/search");
+        });
+
+        function mostrarError(msg) {
+            alert(msg);
+        }
+
+        function agregarEstudiante() {
+            let horario = $("#dia_semana-busqueda").val();
+            let estudiante = $("#resultado").find("input[name=id-est]:checked").val();
+            if (estudiante === undefined) {
+                estudiante = "";
+            }
+            let data = {"horario": horario, "estudiante": estudiante};
+
+            $(".overlay").toggle();
+            let url = '/api/administracion/ciclos_lectivos/talleres/estudiantes';
+            $.ajax({
+                url: url,
+                data: data,
+                method: 'POST',
+                success: function (response) {
+                    if (response['status'] === 200) {
+                        window.location.replace('{{ url_for("ciclo_lectivo_taller",id_ciclo=ciclo_lectivo.id
+                           , id_taller=taller.id) }}');
+                    } else {
+                        $(".overlay").toggle();
+                        debugger;
+                        if (response["message"] === "nucleo")
+                            $("#error-nucleo").show();
+                        if (response["message"] === "horario")
+                            $("#error-dia").show();
+                        if (response["message"] === "estudiante")
+                            $("#error-estudiante").show();
+                        if (response["status"] === 409 || response["status"] === 500)
+                            mostrarError(response["message"]);
+                    }
+                },
+                error: function () {
+                    $(".overlay").toggle();
+                    alert("Ha ocurrido un error");
+                }
+            });
+
+        }
+
+        function buscar() {
+            let $filter = $("#search-filter");
+            let apellido = $filter.find("input[name=apellido]").val();
+            let numero = $filter.find("input[name=numero]").val();
+            search_params = {"apellido": apellido, "numero": numero};
+            result_table.ajax.url("/api/estudiantes/search");
+            result_table.ajax.reload();
+            $("#resultado").show();
+        }
+
+        function init_table_result(url) {
+            result_table = $("#resultado").DataTable({
+                deferLoading: 0,
+                serverSide: true,
+                ajax: {
+                    data: function () {
+                        return search_params
+                    },
+                    url: url,
+                    dataSrc: "data"
+                },
+                dom: 'Bfrtip',
+                bInfo: false,
+                'pageLength': {{ config.registros_por_pagina }},
+                searching: false,
+                columns: [
+                    {"data": "numero"},
+                    {"data": "nombre"},
+                    {"data": "apellido"},
+                    {
+                        "data": "id",
+                        "sortable": false,
+                        "render": function (data) {
+                            return "<input name='id-est' type='radio' value='" + data.valueOf() + "'/>"
+                        }
+                    }
+                ]
+            });
+        }
+
+        $("#nucleo-busqueda").change(function () {
+            let value = $(this).val();
+            let $select = $("#dia_semana-busqueda");
+            $select.attr("data-source",
+                "/api/administracion/ciclos_lectivos/{{ ciclo_lectivo.id }}/talleres/{{ taller.id }}/\n" +
+                "horarios?nucleo=" + value);
+            $select.empty();
+            initSelectAjax($select);
+            $("#dia").show();
+        });
+    </script>
+{% endblock %}

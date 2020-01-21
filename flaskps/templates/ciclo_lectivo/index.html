@@ -1,0 +1,93 @@
+{% extends "layout.html" %}
+
+{% block title %}Ciclos lectivos | Administración{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block header %}
+    {% include 'shared/nav_config.html' %}
+{% endblock %}
+
+{% block section %}
+    <div class="container p-3">
+        <h1 class="font-weight-bolder">Ciclos Lectivos</h1>
+        <div class="row">
+            <div class="col-md-6">
+            {% if ciclo_actual%}
+                <div class="border-info border rounded p-4">
+                    <h4>Ciclo lectivo actual</h4>
+                    <p><span>{% if ciclo_actual.semestre == 0 %}Primer{% else %}Segundo{% endif %} Semestre</span></p>
+                    <p>Inicio:<span>{{ ciclo_actual.fecha_ini.strftime("%d/%m/%Y") }}</span></p>
+                    <p>Fin:<span>{{ ciclo_actual.fecha_fin.strftime("%d/%m/%Y") }}</span></p>
+                    <a class="btn btn-primary stretched-link" href="/administracion/ciclos_lectivos/{{ ciclo_actual.id }}">Ver más información</a>
+                </div>
+            {% endif %}
+            </div>
+            <div class="col-md-6">
+            {% if ciclo_proximo%}
+                <div class="border-secondary border rounded p-4">
+                    <h4>Ciclo lectivo próximo</h4>
+                    <p><span>{% if ciclo_proximo.semestre == 0 %}Primer{% else %}Segundo{% endif %} Semestre</span></p>
+                    <p>Inicio:<span>{{ ciclo_proximo.fecha_ini.strftime("%d/%m/%Y") }}</span></p>
+                    <p>Fin:<span>{{ ciclo_proximo.fecha_fin.strftime("%d/%m/%Y") }}</span></p>
+                    <a class="btn btn-secondary stretched-link" href="/administracion/ciclos_lectivos/{{ ciclo_proximo.id }}">Ver más información</a>
+                </div>
+            {% endif %}
+            </div>
+        </div>
+        <div class="p-4">
+            {% if has_permission("administracion_new")%}
+            <a class="btn btn-success" href="{{ url_for('ciclo_lectivo_new') }}">Nuevo ciclo lectivo</a>
+            {% endif %}
+        </div>
+        <h3 class="font-weight-bold dpt-3 pb-2">Todos los ciclos lectivos</h3>
+        <table class="table table-hover" id="ciclos_lectivos">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Fecha Inicio</th>
+                    <th>Fecha Fin</th>
+                    <th>Semestre</th>
+                    <th width="40px"></th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block footer %}
+    {% include 'shared/footer.html' %}
+{% endblock %}
+
+{% block script %}
+    <script>
+    $(document).ready(function () {
+        $("#ciclos_lectivos").DataTable({
+            serverSide: true,
+            processing: true,
+            ajax: {
+                url:'/api/administracion/ciclos_lectivos',
+                dataSrc: "data"
+            },
+            dom: 'Bfrtip',
+            'pageLength': 10,
+            searching: false,
+            columns:[
+                {"data": "fecha_ini"},
+                {"data": "fecha_fin"},
+                {"data": "semestre"},
+                {
+                    "data": "id",
+                    "sortable": false,
+                    "render": function (data, type, full, meta){
+                        return "<a class='btn btn-info' href='/administracion/ciclos_lectivos/" + data.valueOf() + "'>Ver</a>"
+                    }
+                }
+            ]
+        });
+    });
+    </script>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %} Nuevo instrumento {% endblock %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block header %}
+{% include 'shared/nav_config.html' %}
+{% endblock %}
+
+{% block section %}
+<form class="m-4" action="{{ url_for('instrument_create') }}" method="POST" enctype="multipart/form-data">
+    <h4 class="font-weight-bold text-right">Crear instrumento</h4>
+    <hr id="lineaDivision">
+    <div class="row">
+        <div class="col-6">
+            <div class="form-group">
+                <label class="form-control-label" for="nombre">Nombre</label>
+                <input type="text" placeholder="Ingresa un nombre" class="form-control" name="nombre" id="nombre"
+                    required>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="form-group">
+                <label for="tipo_instrumento">Tipo de instrumento</label>
+                <select class="form-control" id="tipo_instrumento" name="tipo_instrumento">
+                    <option>Selecciona un tipo de instrumento</option>
+                    {% for tipoInstrumento in tipos %}
+                    <option>{{ tipoInstrumento.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="form-group">
+                <label for="image">Selecciona una imagen</label>
+                <input type="file" class="form-control-file" id="image" name="image">
+            </div>
+        </div>
+    </div>
+    <div class="m-0 p-0 rounded-bottom">
+        <button type="submit" class="btn btn-danger btn-lg btn-block">Aceptar</button>
+    </div>
+</form>
+
+{% endblock %}
+
+{% block footer %}
+{% include 'shared/footer.html' %}
+{% endblock %}

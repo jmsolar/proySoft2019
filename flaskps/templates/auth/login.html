@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block title %} Iniciar sesión {% endblock %}
+
+{% block head %}
+  {{ super() }}
+{% endblock %}
+
+{% block header %}
+  {% include 'shared/nav.html' %}
+{% endblock %}
+
+{% set mostrarBotonLogin = true %}
+
+{% block section %}
+
+  <form class="m-4" action="{{ url_for('auth_authenticate') }}" method="POST">
+    <h4 class="font-weight-bold text-right">Iniciar sesión</h4>
+    <hr id="lineaDivision">
+    <div class="row">
+      <div class="col-md-12 col-lg-6">
+        <div class="form-group has-danger">
+          <label class="form-control-label" for="usuarioInput">Nombre de usuario</label>
+          <input name="username" type="text" placeholder="Ingresa tu nombre de usuario" class="form-control" id="usuarioInput" required>
+        </div>
+      </div>
+      <div class="col-md-12 col-lg-6">
+        <div class="form-group has-danger">
+          <label class="form-control-label" for="contraseñaInput">Contraseña</label>
+          <input name="password" type="password" class="form-control" id="contraseñaInput" required>
+        </div>
+      </div>
+    </div>
+    {% if mensaje is not none %}
+      <div class="row my-2">
+        <div class="col-md-12 col-lg-6">
+          <text class="text-danger">{{ mensaje }}</text>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="m-0 p-0 rounded-bottom">
+      <button type="submit" class="btn btn-danger btn-lg btn-block">Aceptar</button>
+    </div>
+  </form>
+
+{% endblock %}
+
+{% block footer %}
+  {% include 'shared/footer.html' %}
+{% endblock %}

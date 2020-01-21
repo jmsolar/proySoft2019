@@ -1,0 +1,317 @@
+{% extends "layout.html" %}
+
+{% block title %}Horarios | {{ taller.nombre }}{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block header %}
+    {% include 'shared/nav_config.html' %}
+{% endblock %}
+
+{% block section %}
+    <div class="container p-3">
+        <h2 class="font-weight-bolder mb-5">Horarios de {{ taller.nombre }}</h2>
+
+        <div class="form-group">
+            <label for="nucleo-busqueda" class="control-label">Seleccione un núcleo</label>
+            <select id="nucleo-busqueda" class="form-control"
+                    data-source="/api/nucleos?ciclo_lectivo={{ ciclo_lectivo.id }}&taller={{ taller.id }}"
+                    data-valueKey="id" data-displayKey="nombre" data-placeholder="Seleccione un nucleo"></select>
+        </div>
+        <div id="dia" class="form-group" {#style="display: none"#}>
+            <label for="dia_semana-busqueda" class="control-label">Seleccione un día</label>
+            <select id="dia_semana-busqueda" class="form-control"
+                    data-source=""
+                    data-valueKey="id" data-displayKey="dia" data-placeholder="Seleccione un dia"></select>
+        </div>
+
+        <button id="verHorario" type="button" class="btn btn-primary" onclick="buscar_estudiantes()">Ver horario</button>
+        <hr>
+        <div id="horario">
+            <h4>Estudiantes</h4>
+            <div class="table-responsive">
+                <table class="table" id="estudiantes-horario">
+                    <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Nivel</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="tomarAsistencia()">Tomar asistencia</button>
+            {% if has_permission("administracion_destroy") %}
+            <button class="btn btn-danger" data-toggle="modal" data-target="#ModalEliminar">Eliminar horario</button>
+            {% endif %}
+            <hr>
+        </div>
+
+        <br>
+
+        <div class="btn-block p-2 d-block">
+            {% if has_permission("administracion_new") %}
+                <a class="btn btn-success d-block d-sm-inline mt-sm-0 mt-2 cursor-handler text-white"
+                   data-toggle="modal" data-target="#agregar_modal">
+                    Agregar horario
+                </a>
+            {% endif %}
+            <a class="btn btn-secondary d-block float-sm-right d-sm-inline mt-sm-0 mt-2 mb-sm-0 mb-2"
+               href="{{ url_for('ciclo_lectivo_taller', id_ciclo=ciclo_lectivo.id, id_taller=taller.id) }}">
+                Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="modal fade" id="agregar_modal" tabindex="-1" role="dialog"
+         aria-labelledby="agregar-horario_modal"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="titulo-agregar">Agregar horario</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                            onclick="cerrarModalAgregar()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="agregar_horario"
+                          action="{{ url_for("taller_add_horario", id_ciclo=ciclo_lectivo.id, id_taller=taller.id) }}">
+                        <div class="form-group">
+                            <label for="nucleo">Nucleo</label>
+                            <select id="nucleo" name="nucleo" class="form-control" data-source="/api/nucleos"
+                                    data-valueKey="id" data-displayKey="nombre"
+                                    data-placeholder="Seleccione un n&uacute;cleo"></select>
+                            <p id="error-nucleo" class="text-danger error-text">Debe seleccionar un núcleo</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="dia_semana">Dia de semana</label>
+                            <select id="dia_semana" name="dia_semana" class="form-control" data-source="/api/dia_semana"
+                                    data-valueKey="id" data-displayKey="dia"
+                                    data-placeholder="Seleccione un d&iacute;a"></select>
+                            <p id="error-dia" class="text-danger error-text">Debe seleccionar un día de semana</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="hora_inicio">Hora de inicio</label>
+                            <input type="time" id="hora_inicio" name="hora_inicio" class="form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="hora_fin">Hora de fin</label>
+                            <input type="time" id="hora_fin" name="hora_fin" class="form-control"/>
+                        </div>
+                    </form>
+                    <p id="error-agregar" class="text-danger"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="cerrarModalAgregar()">
+                        Cerrar
+                    </button>
+                    <button type="button" class="btn btn-primary"
+                            onclick="agregarHorario()">
+                        Agregar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="ModalEliminar" tabindex="-1" role="dialog" aria-labelledby="ModalEliminar"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Eliminar horario</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                            onclick="cerrarModalEliminar()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Esta Seguro que desea eliminar el horario?</p>
+                    <p id="error-eliminar" class="error-text text-danger"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                            onclick="cerrarModalEliminar()">Cerrar
+                    </button>
+                    <a href="">
+                        <button type="button" class="btn btn-primary" onclick="deleteHorario()">
+                            Eliminar
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="overlay">
+        <div class="w-100 h-100 d-flex justify-content-center align-items-center text-white">
+            <div class="spinner-border" style="width:4rem; height: 4rem;">
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+    {% include 'shared/footer.html' %}
+{% endblock %}
+
+{% block script %}
+    <script>
+        let horario_id;
+        let estudiantes;
+        let search_params;
+
+        $(document).ready(function () {
+            $(".error-text").hide();
+            $("#horario").hide();
+            $("#verHorario").prop("disabled", true);
+            init_table_result("/api/administracion/ciclos_lectivos/talleres/estudiantes");
+        });
+
+        function cerrarModalAgregar() {
+            $("#error-agregar").hide();
+            $(".error-text").hide();
+        }
+
+        function cerrarModalEliminar() {
+            $("#error-eliminar").hide();
+        }
+
+        function tomarAsistencia(){
+            let url = '/administracion/ciclos_lectivos/{{ciclo_lectivo.id}}/talleres/{{taller.id}}/horarios/'
+                + horario_id + '/asistencia';
+            window.location.replace(url);
+        }
+
+        function agregarHorario() {
+            let $form = $("#agregar_horario");
+            let error;
+            if ($("#nucleo").val() === null) {
+                $("#error-nucleo").show();
+                error = true;
+            }
+            if ($("#dia_semana").val() === null) {
+                $("#error-dia").show();
+                error = true;
+            }
+            if (!error) {
+                $(".overlay").fadeIn(300);
+                $.ajax({
+                    method: 'POST',
+                    url: "/api/administracion/ciclos_lectivos/{{ ciclo_lectivo.id }}/talleres/{{ taller.id }}/horarios",
+                    async: false,
+                    data: $form.serialize(),
+                    success: function (data) {
+                        if (data["status"] === 200) {
+                            $(".overlay").fadeOut(300);
+                            window.location.reload();
+                        } else {
+                            $("#error-agregar").text(data["message"]).show();
+                            $(".overlay").fadeOut(300);
+                        }
+                    }
+                });
+            }
+
+        }
+
+        function seleccionarHorario(id) {
+            horario_id = id;
+        }
+
+        function deleteHorario() {
+            $(".overlay").fadeIn(300);
+            $.ajax({
+                method: 'DELETE',
+                url: '{{ url_for("taller_delete_horario", id_ciclo=ciclo_lectivo.id, id_taller=taller.id) }}',
+                data: {'horario': horario_id},
+                success: function (data) {
+                    if (data["status"] === 200) {
+                        $(".overlay").fadeOut(300);
+                        window.location.reload();
+                    } else {
+                        $("#error-eliminar").text(data["message"]).show();
+                        $(".overlay").fadeOut(300);
+                    }
+                }
+            });
+        }
+
+        $("#nucleo-busqueda").change(function () {
+            let value = $(this).val();
+            let $select = $("#dia_semana-busqueda");
+            $select.attr("data-source",
+                "/api/administracion/ciclos_lectivos/{{ ciclo_lectivo.id }}/talleres/{{ taller.id }}/\n" +
+                "horarios?nucleo=" + value);
+            $select.empty();
+            initSelectAjax($select);
+            $("#dia").show();
+        });
+
+        $("#dia_semana-busqueda").change(function () {
+            let value = $(this).val();
+            if(value !== null) {
+                $("#verHorario").prop("disabled", false);
+                horario_id = value;
+            } else {
+                $("#verHorario").prop("disabled", true);
+            }
+        });
+
+        function buscar_estudiantes() {
+            let horario = $("#dia_semana-busqueda").val();
+            debugger;
+            if (horario !== null) {
+                search_params = {"horario": horario};
+                estudiantes.ajax.reload();
+                $("#horario").show();
+            }
+        }
+
+        function init_table_result(url) {
+            estudiantes = $("#estudiantes-horario").DataTable({
+                deferLoading: 0,
+                serverSide: true,
+                ajax: {
+                    data: function () {
+                        return search_params
+                    },
+                    url: url,
+                    dataSrc: "data"
+                },
+                dom: 'Bfrtip',
+                bInfo: false,
+                'pageLength': {{ config.registros_por_pagina }},
+                searching: false,
+                language: {
+                    "zeroRecords": "No se encontraron estudiantes para el horario"
+                },
+                columns: [
+                    {"data": "nombre"},
+                    {"data": "apellido"},
+                    {"data": "nivel"},
+                    {
+                        "data": "id",
+                        "sortable": false,
+                        "render": function (data) {
+                            {% if has_permission("administracion_destroy") %}
+                                return "<button type='button' class='btn btn-default btn-sm' data-toggle='modal'" +
+                                    "data-target='#ModalEliminar' onclick='seleccionarEstudiante(" + data.valueOf() + ")' >" +
+                                    "<span class='icon-bin glyphicon-md'></span>" +
+                                    "</button>";
+                            {% else %}
+                                return "";
+                            {% endif %}
+                        }
+                    }
+                ]
+            });
+        }
+    </script>
+{% endblock %}

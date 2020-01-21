@@ -1,0 +1,138 @@
+{% extends "layout.html" %}
+{% block title %}Usuarios inactivos{% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+{% block header %}
+    {% include 'shared/nav_config.html' %}
+{% endblock %}
+{% block section %}
+
+    <div class="container my-3">
+        <h4 class="font-weight-bold text-right">Usuarios inactivos</h4>
+        <hr id="lineaDivision">
+        <table class="table" id="usuarios">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Apellido</th>
+                    <th scope="col">Email</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody class="table-hover">
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.first_name }}</td>
+                    <td>{{ user.last_name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        <a href="/usuarios/activar/{{user.id}}">
+                            <button type="button" class="btn btn-success btn-sm">Activar</button> 
+                        </a>
+                    </td>
+                </tr>
+               {% endfor %} 
+            </tbody>
+        </table>
+
+        <div class="row">
+            <div class="col-4">
+              <a class="btn btn-danger btn-lg btn-block" href="{{ url_for('user_index') }}">Volver</a>
+            </div>
+            <div class="col-8">
+              <a class="btn btn-success btn-lg btn-block" href="/usuarios/activar/todos">Activar todos</a>
+            </div>
+          </div>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="ModalEliminar" tabindex="-1" role="dialog" aria-labelledby="ModalEliminar"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Eliminar</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        ¿Esta Seguro que desea Eliminar?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <a href="">
+                            <button type="button" class="btn btn-primary" onclick="eliminarSeleccionado()">
+                                <span class="spinner-border spinner-border-sm eliminar-loader" role="status"
+                                      aria-hidden="true"></span>
+                                Eliminar
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        let id_user_seleccionado = ""
+
+        $(document).ready(function () {
+            $(".eliminar-loader").hide();
+
+            $("#usuarios").DataTable({
+                serverSide: true,
+                processing: true,
+                ajax: {
+                    url: '/api/usuarios/inactivos',
+                    dataSrc: "data"
+                },
+                dom: 'Bfrtip',
+                'pageLength': 10,
+                searching: false,
+                columns: [
+                    {"data": "first_name"},
+                    {"data": "last_name"},
+                    {"data": "email"},
+                    {
+                        "data": "id",
+                        "sortable": false,
+                        "render": function (data, type, full, meta) {
+                            return '<a href="/usuarios/editar/' + data.valueOf() + '">' +
+                                '          <button type="button" class="btn btn-default btn-sm">' +
+                                '               <span class="icon-pencil glyphicon-md"></span>' +
+                                '          </button> ' +
+                                '        </a>' +
+                                '<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#ModalEliminar" onclick="seleccionarUsuario('+ data.valueOf() +')">' +
+                                '              <span class="icon-bin glyphicon-md"></span>' +
+                                '       </button> '
+                        }
+                    }
+                ]
+            });
+        });
+
+        function seleccionarUsuario(id) {
+            id_user_seleccionado = id;
+        }
+
+        function eliminarSeleccionado() {
+            $(".eliminar-loader").show();
+            $.ajax({
+                type: "GET",
+                url: "usuarios/eliminar/" + id_user_seleccionado,
+                async: false,
+                success: function () {
+                    $(".eliminar-loader").hide();
+                },
+                error: function () {
+                    $(".eliminar-loader").hide();
+                }
+            });
+        }
+    </script>
+{% endblock %}

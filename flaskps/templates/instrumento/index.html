@@ -1,0 +1,124 @@
+{% extends "layout.html" %}
+
+{% block title %}Instrumentos{% endblock %}
+
+{% block head %}
+  {{ super() }}
+{% endblock %}
+
+{% block header %}
+  {% include 'shared/nav_config.html' %}
+{% endblock %}
+
+{% block section %}
+
+<section>
+    <div class="jumbotron mb-0 text-right">
+        <h1 class="display-3">Módulo instrumentos</h1>
+        <p class="lead">Gestion de tus instrumentos</p>
+        <hr class="my-4">
+        <p>Desde este apartado podés gestionar tus instrumentos con pocos clicks</p>
+    </div>
+</section>
+
+<div class="container-fluid mt-3 mb-5">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">Nombre</th>
+        <th scope="col">Tipo instrumento</th>
+        <th scope="col">Foto</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for instrumento in instrumentos %}
+      <tr>
+        <td>{{ instrumento.nombre }}</td>
+        <td>{{ instrumento.tipo_instrumento.nombre }}</td>
+        <td>
+            <a href="/instrumentos/show/{{ instrumento.numero_inventario }}">
+              <button type="button" class="btn btn-default btn-sm">
+                <span class="icon-search glyphicon-md"></span>
+              </button>
+            </a>
+          <a href="/instrumentos/editar/{{ instrumento.numero_inventario }}">
+            <button type="button" class="btn btn-default btn-sm">
+              <span class="icon-pencil glyphicon-md"></span>
+            </button>
+          </a>
+          <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#ModalEliminar"
+            onclick="seleccionarInstrumento({{ instrumento.numero_inventario }})">
+            <span class="icon-bin glyphicon-md"></span>
+          </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="row">
+    <div class="col-4">
+      <a class="btn btn-danger btn-lg btn-block" href="{{ url_for('home') }}">Volver</a>
+    </div>
+    <div class="col-8">
+      <a class="btn btn-success btn-lg btn-block" href="{{ url_for('instrument_new') }}">Nuevo</a>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="ModalEliminar" tabindex="-1" role="dialog" aria-labelledby="ModalEliminar"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Eliminar</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          ¿Estas seguro que deseas eliminar el instrumento?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+          <a href="">
+            <button type="button" class="btn btn-primary" onclick="eliminarSeleccionado()">
+              <span class="spinner-border spinner-border-sm eliminar-loader" role="status" aria-hidden="true"></span>
+              Eliminar
+            </button>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        let id_instrumento_seleccionado = ""
+
+        $(document).ready(function () {
+            $(".eliminar-loader").hide();
+        });
+
+        function seleccionarInstrumento(id){
+            id_instrumento_seleccionado = id;
+        }
+
+        function eliminarSeleccionado() {
+            $(".eliminar-loader").show();
+            $.ajax({
+                type: "GET",
+                url: "instrumentos/eliminar/" + id_instrumento_seleccionado,
+                async: false,
+                success: function(){
+                    $(".eliminar-loader").hide();
+                },
+                error: function(){
+                    $(".eliminar-loader").hide();
+                }
+            });
+        }
+    </script>
+{% endblock %}

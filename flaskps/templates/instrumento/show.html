@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block title %}Docente{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block header %}
+  {% include 'shared/nav_config.html' %}
+{% endblock %}
+{% block section %}
+
+<div class="row m-3">
+    <div class="col-12">
+        <h4 class="font-weight-bold text-right">Detalle de instrumento</h4>
+        <hr id="lineaDivision">
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label class="form-control-label" for="nombre">Nombre</label>
+                    <input type="text" disabled value="{{ nombre }}" class="form-control" name="nombre" id="nombre">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label class="form-control-label" for="tipo">Tipo instrumento</label>
+                    <input type="text" disabled value="{{ tipo }}" class="form-control"
+                        name="tipo" id="tipo">
+                </div>
+            </div>
+        </div>
+        <div class="row my-3 mx-1">
+            <img class="img-thumbnail img-custom" src="{{ ruta }}">
+        </div>
+        <div class="row rounded-bottom">
+            <div class="col-4">
+                <a class="btn btn-danger btn-lg btn-block" href="{{ url_for('instrument_index') }}">Volver</a>
+            </div>
+            <div class="col-8">
+                <a class="btn btn-warning btn-lg btn-block" href="/instrumentos/editar/{{id}}">Editar</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

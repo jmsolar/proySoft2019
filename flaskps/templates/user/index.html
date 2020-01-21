@@ -1,0 +1,156 @@
+{% extends "layout.html" %}
+{% block title %}Usuarios{% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+{% block header %}
+    {% include 'shared/nav_config.html' %}
+{% endblock %}
+{% block section %}
+
+    <div class="container mt-3">
+        <h4 class="font-weight-bold text-right">Usuarios</h4>
+        <hr id="lineaDivision">
+        {% if mensaje is not none %}
+            <div class="row my-2">
+                <div class="col-md-12 col-lg-6">
+                    <text class="text-danger">{{ mensaje }}</text>
+                </div>
+            </div>
+        {% endif %}
+        <a href="{{ url_for('user_inactivos') }}" class="text-left">
+            <div class="m-0 p-0 rounded-bottom">
+                <button type="button" class="btn btn-info btn-lg ">Ver inactivos</button>
+            </div>
+        </a>
+        <table class="table" id="usuarios">
+            <thead class="thead-dark">
+            <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Apellido</th>
+                <th scope="col">Email</th>
+                <th scope="col"> <a href="{{ url_for('user_new') }}" >
+                    <button type="button" class="btn btn-default btn-sm">
+                        <span class="icon-plus text-white glyphicon-md"></span>
+                    </button>
+                </a></th>
+            </tr>
+            </thead>
+            <tbody class="table-hover">
+            {% for user in users %}
+    <tr>
+      <th>{{ user.email }}</th>
+      <td>{{ user.first_name }}</td>
+      <td>{{ user.last_name }}</td>
+            <td>
+      	
+        <a href="/usuarios/editar/{{user.id}}"></a>
+          <button type="button" class="btn btn-default btn-sm">
+               <span class="icon-pencil glyphicon-md"></span>
+          </button> 
+        </a>
+       <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#ModalEliminar" onclick="seleccionarUsuario({{ user.id }}) ">
+              <span class="icon-bin glyphicon-md"></span>
+       </button> 
+      </td>
+                </tr>
+               {% endfor %} 
+            </tbody>
+        </table>
+        <a href="{{ url_for('home') }}" class="text-center">
+            <div class="m-0 p-0 rounded-bottom">
+                <button type="button" class="btn btn-danger btn-lg ">Volver</button>
+            </div>
+        </a>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="ModalEliminar" tabindex="-1" role="dialog" aria-labelledby="ModalEliminar"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Eliminar</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        ¿Esta Seguro que desea Eliminar?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <a href="">
+                            <button type="button" class="btn btn-primary" onclick="eliminarSeleccionado()">
+                                <span class="spinner-border spinner-border-sm eliminar-loader" role="status"
+                                      aria-hidden="true"></span>
+                                Eliminar
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        let id_user_seleccionado = ""
+
+        $(document).ready(function () {
+            $(".eliminar-loader").hide();
+
+            $("#usuarios").DataTable({
+                serverSide: true,
+                processing: true,
+                ajax: {
+                    url: '/api/usuarios',
+                    dataSrc: "data"
+                },
+                dom: 'Bfrtip',
+                'pageLength': 10,
+                searching: false,
+                columns: [
+                    {"data": "first_name"},
+                    {"data": "last_name"},
+                    {"data": "email"},
+                    {
+                        "data": "id",
+                        "sortable": false,
+                        "render": function (data, type, full, meta) {
+                            return '<a href="/usuarios/editar/' + data.valueOf() + '">' +
+                                '          <button type="button" class="btn btn-default btn-sm">' +
+                                '               <span class="icon-pencil glyphicon-md"></span>' +
+                                '          </button> ' +
+                                '        </a>' +
+                                '<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#ModalEliminar" onclick="seleccionarUsuario('+ data.valueOf() +')">' +
+                                '              <span class="icon-bin glyphicon-md"></span>' +
+                                '       </button> '
+                        }
+                    }
+                ]
+            });
+        });
+
+        function seleccionarUsuario(id) {
+            id_user_seleccionado = id;
+        }
+
+        function eliminarSeleccionado() {
+            $(".eliminar-loader").show();
+            $.ajax({
+                type: "GET",
+                url: "usuarios/eliminar/" + id_user_seleccionado,
+                async: false,
+                success: function () {
+                    $(".eliminar-loader").hide();
+                },
+                error: function () {
+                    $(".eliminar-loader").hide();
+                }
+            });
+        }
+    </script>
+{% endblock %}

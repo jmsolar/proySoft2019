@@ -1,0 +1,182 @@
+{% extends "layout.html" %}
+
+{% block title %}Ciclo lectivo{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block header %}
+    {% include 'shared/nav_config.html' %}
+{% endblock %}
+
+{% block section %}
+    <div class="container p-3">
+        <h2 class="font-weight-bold">Ciclo Lectivo</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-9 p-4">
+                <div class="border-info border rounded p-4">
+                    <p><span>{% if ciclo_lectivo.semestre == 0 %}Semestre 1{% else %}Semestre 2{% endif %}</span></p>
+                    <p>Inicio: <span>{{ ciclo_lectivo.fecha_ini.strftime("%d/%m/%Y") }}</span></p>
+                    <p>Fin: <span>{{ ciclo_lectivo.fecha_fin.strftime("%d/%m/%Y") }}</span></p>
+                </div>
+            </div>
+        </div>
+        <div class="p-4"></div>
+        <h3>Talleres del ciclo lectivo</h3>
+        <table class="table table-hover table-active" id="talleres">
+            <thead class="thead-dark">
+            <tr>
+                <th>Nombre</th>
+                <th width="80px"></th>
+            </tr>
+            </thead>
+        </table>
+        <div class="p-3"></div>
+        <div class="btn-block p-2">
+            {% if has_permission("administracion_new") %}
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#agregar-taller_modal">
+                    Agregar taller
+                </button>
+            {% endif %}
+            <a class="btn btn-secondary float-right" href="{{ url_for('ciclo_lectivo_index') }}">Volver</a>
+        </div>
+    </div>
+
+    <div class="modal fade" id="agregar-taller_modal" tabindex="-1" role="dialog" aria-labelledby="agregar-taller_modal"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Agregar taller</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="add_taller" action="{{ url_for("ciclo_lectivo_add_taller", id=ciclo_lectivo.id) }}"
+                          method="POST">
+                        <div class="form-group">
+                            <label for="taller">Taller</label>
+                            <select id="taller" class="form-control" name="taller" data-source="/api/talleres"
+                                    data-valueKey="id"
+                                    data-displayKey="nombre_corto" data-placeholder="Seleccione un taller"></select>
+                            <span class="text-danger select-error">Debe seleccionar un taller</span>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <a class="btn btn-primary text-white"
+                       onclick="agregarTaller()">
+                        Agregar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="ModalEliminar" tabindex="-1" role="dialog" aria-labelledby="ModalEliminar"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Eliminar taller</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ¿Esta seguro que desea eliminar el taller seleccionado?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <a href="">
+                        <button type="button" class="btn btn-primary" onclick="deleteTaller()">
+                            Eliminar
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+    {% include 'shared/footer.html' %}
+{% endblock %}
+
+{% block script %}
+    <script>
+        var table;
+        let id_taller;
+        $(document).ready(function () {
+            $(".select-error").hide();
+
+            table = $("#talleres").DataTable({
+                ajax: {
+                    url: "/api/administracion/ciclos_lectivos/" + {{ ciclo_lectivo.id }} +"/talleres",
+                    dataSrc: "talleres"
+                },
+                columns: [
+                    {"data": "nombre"},
+                    {
+                        "data": "id",
+                        "render": function (data) {
+                            return "<div><a class='btn btn-info' " +
+                                "href='/administracion/ciclos_lectivos/{{ ciclo_lectivo.id }}/talleres/"
+                                + data.valueOf() + "'>Ver</a>"
+                                {% if has_permission("administracion_destroy") %}
+                                    + "<button type=\"button\" class=\"btn btn-default btn-sm\" data-toggle=\"modal\"\n"
+                                    + "data-target=\"#ModalEliminar\" onclick=\"seleccionarTaller("
+                                    + data.valueOf() + ")\">\n" +
+                                    " <span class=\"icon-bin glyphicon-md\"></span>\n" +
+                                    " </button></div>";
+                                {% endif %}
+                        },
+                        "sortable": false
+                    }
+                ],
+                dom: 'Bfrtip',
+                'pageLength': 10,
+                searching: false,
+                bInfo: false
+            });
+        });
+
+        function recargarTabla() {
+            table.ajax.reload();
+        }
+
+        function seleccionarTaller(id) {
+            id_taller = id;
+        }
+
+        function agregarTaller() {
+            let value = $("#taller").val();
+            if (value === null) {
+                $("#taller").addClass("border-danger");
+                $(".select-error").show();
+            } else {
+                let formData = $("#add_taller").serialize();
+                $.ajax({
+                    method: "POST",
+                    url: '{{ url_for('ciclo_lectivo_add_taller', id=ciclo_lectivo.id) }}',
+                    data: formData
+                });
+                window.location.reload();
+            }
+        }
+
+        function deleteTaller() {
+            $.ajax({
+                method: "POST",
+                url: "{{ url_for("ciclo_lectivo_delete_taller", id=ciclo_lectivo.id) }}",
+                data: {
+                    "id": id_taller,
+                }
+            });
+            window.location.reload();
+        }
+    </script>
+{% endblock %}

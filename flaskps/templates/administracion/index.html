@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% block title %}Administración{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block header %}
+    {% include 'shared/nav_config.html' %}
+    <style>
+    .card:hover {
+        background:#eee;
+    }
+    </style>
+{% endblock %}
+
+{% block section %}
+    <div class="container p-2">
+        <h2>Módulo administrativo</h2>
+        <div class="row card-deck">
+            <div class="col-md-3 col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Ciclos lectivos</h5>
+                        <p class="card-text">Informacion sobre los ciclos lectivos</p>
+                        <a class="stretched-link" href="{{url_for('ciclo_lectivo_index')}}"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Talleres</h5>
+                        <p class="card-text">Informacion sobre los diferentes talleres que se cursan</p>
+                        <a class="stretched-link" href="#"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Docentes</h5>
+                        <p class="card-text">Informacion sobre los docentes de la organización</p>
+                        <a class="stretched-link" href="#"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Estudiantes</h5>
+                        <p class="card-text">Informacion sobre los estudiantes de la organización</p>
+                        <a class=" stretched-link" href="#"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+    {% include 'shared/footer.html' %}
+{% endblock %}

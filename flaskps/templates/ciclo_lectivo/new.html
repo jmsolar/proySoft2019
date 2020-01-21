@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+
+{% block title %} Nuevo usuario {% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block header %}
+    {% include 'shared/nav_config.html' %}
+{% endblock %}
+
+{% block section %}
+    <div class="container">
+    <form class="m-4" action="{{ url_for('ciclo_lectivo_create') }}" method="POST">
+        <h4 class="font-weight-bold text-right">Agregar ciclo lectivo</h4>
+        <hr id="lineaDivision">
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label class="form-control-label" for="fecha_ini">Fecha inicio</label>
+                    <input type="date" placeholder="Ingresa una fecha" class="form-control {% if error %}border-danger{% endif %}" name="fecha_ini"
+                           id="fecha_ini"
+                           required>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label class="form-control-label" for="fecha_fin">Fecha fin</label>
+                    <input type="date" placeholder="Ingresa una fecha" class="form-control {% if error %}border-danger{% endif %}" name="fecha_fin"
+                           id="fecha_fin" required>
+                </div>
+            </div>
+        </div>
+        {% if error %}
+        <p class="font-weight-bold text-danger">{{ error }}</p>
+        {% endif %}
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label class="form-control-label" for="semestre">Semestre</label>
+                    <select class="form-control" id="semestre" name="semestre" required>
+                        <option selected disabled>Seleccione un semestre</option>
+                        <option value="0">Primero</option>
+                        <option value="1">Segundo</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="m-0 p-0 rounded-bottom row">
+            <button type="submit" class="btn btn-danger btn-lg col-md-5 m-auto">Aceptar</button>
+            <a class="btn btn-secondary btn-lg col-md-5 m-auto" href="{{ url_for('ciclo_lectivo_index') }}">Volver</a>
+        </div>
+    </form>
+    </div>
+
+    {#{% include 'shared/contacto.html' %}#}
+
+{% endblock %}
+
+{% block footer %}
+    {% include 'shared/footer.html' %}
+{% endblock %}

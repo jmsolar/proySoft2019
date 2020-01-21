@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block title %} Error {% endblock %}
+
+{% block head %}
+  {{ super() }}
+{% endblock %}
+
+{% block section %}
+
+  <section id="errorSec">
+      {% set codigoError = error_name[:3]  %}
+      {% set longitudError = error_description|length %}
+      {% set tipoError = error_description[:longitudError] %}
+      <div class="errorCont">
+        <div class="error">
+            <h1 id="codigoError" class="display-1 text-center font-weight-bolder">{{ codigoError }}</h1>
+            <h1 id="tipoError" class="display-3 text-center font-weight-bolder">{{ tipoError }}</h1>
+            <a class="btn btn-secondary btn-lg btn-block mt-4" href="{{ url_for('home') }}">Volver al inicio</a>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}

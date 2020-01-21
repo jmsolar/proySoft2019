@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+
+{% block title %} {{ configuracion.titulo }} {% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block header %}
+    {% if is_authenticated(session) %}
+        {% include 'shared/nav_config.html' %}
+    {% else %}
+        {% include 'shared/nav.html' %}
+    {% endif %}
+{% endblock %}
+
+{% block section %}
+
+    <section>
+        <div class="jumbotron mb-0 text-right">
+            <div class="container">
+                <h1 class="display-3">Bienvenido!</h1>
+                <p class="lead">Este sitio permite gestionar de forma rápida y sencilla todo lo relacionado con la
+                    asistencia de alumnos, control de instrumentos y más </p>
+                <hr class="my-4">
+                {% if not is_authenticated(session) %}
+                    <p>Para comenzar podés iniciar sesión</p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    {% if is_authenticated(session) %}
+        {% if talleres_hoy %}
+            <div class="container mb-5">
+                <h2 class="pt-3 font-weight-bold">Talleres en el día de hoy</h2>
+                <hr>
+                <div class="card-deck">
+                    {% for taller in talleres_hoy %}
+                        <div class="card">
+                            <div class="card-body">
+                                <h2 class="card-title">{{ taller.taller.nombre }}</h2>
+                                <p class="card-subtitle">{{ taller.nucleo.nombre }}</p>
+                                <p class="card-subtitle text-black-50">{{ taller.nucleo.direccion }}</p>
+                            </div>
+                            <div class="card-footer">
+                                <a class="btn btn-primary" href="{{ url_for("ciclo_lectivo_taller"
+                                , id_ciclo=taller.ciclo_lectivo.id, id_taller=taller.taller.id) }}">Ver taller</a>
+                                <a class="btn btn-primary" href="{{ url_for("taller_asistencia"
+                                , id_ciclo=taller.ciclo_lectivo.id, id_taller=taller.taller.id, id_horario=taller.id) }}">
+                                    Tomar asistencia</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <hr>
+            </div>
+        {% endif %}
+    {% endif %}
+
+    {% include 'shared/contacto.html' %}
+
+{% endblock %}
+
+{% block footer %}
+    {% include 'shared/footer.html' %}
+{% endblock %}

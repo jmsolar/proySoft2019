@@ -1,0 +1,150 @@
+{% extends "layout.html" %}
+
+{% block title %} Detalle del estudiante {% endblock %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block header %}
+{% include 'shared/nav_config.html' %}
+{% endblock %}
+
+{% block section %}
+<form class="m-4" action="{{ url_for('student_save') }}" method="POST">
+    <h4 class="font-weight-bold text-right">Actualizar estudiante</h4>
+    <hr id="lineaDivision">
+    <div class="row">
+        <div class="col-6">
+            <div class="form-group">
+                <label class="form-control-label" for="nombre">Nombre</label>
+                <input type="text" class="form-control" value="{{ estudiante.nombre }}" name="nombre" id="nombre"
+                required>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="form-group">
+                <label class="form-control-label" for="apellido">Apellido</label>
+                <input type="text" class="form-control" value="{{ estudiante.apellido }}" name="apellido" id="apellido"
+                required>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <div class="form-group">
+                <label class="form-control-label" for="fecha_nac">Fecha de nacimiento</label>
+                <input type="text" class="form-control" value="{{ estudiante.fecha_nac }}" name="fecha_nac" id="fecha_nac"
+                required>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="form-group">
+                <label class="form-control-label" for="localidad">Localidad</label>
+                <select class="form-control" id="localidad" name="localidad">
+                    <option>{{ localidad }}</option>
+                    {% for localidad in localidades %}
+                    <option>{{ localidad.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <div class="form-group">
+                <label class="form-control-label" for="nivel">Nivel</label>
+                <select class="form-control" id="nivel" name="nivel">
+                    <option>{{ nivel.nombre }}</option>
+                    {% for nivel in niveles %}
+                    <option>{{ nivel.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="form-group">
+                <label class="form-control-label" for="domicilio">Domicilio</label>
+                <input type="text" class="form-control" value="{{ estudiante.domicilio }}" name="domicilio" id="domicilio"
+                required>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <div class="form-group">
+                <label class="form-control-label" for="genero">Género</label>
+                <select class="form-control" id="genero" name="genero">
+                    <option>{{ genero.nombre }}</option>
+                    {% for genero in generos %}
+                    <option>{{ genero.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="form-group">
+                <label class="form-control-label" for="escuela">Escuela</label>
+                <select class="form-control" id="escuela" name="escuela">
+                    <option>{{ escuela.nombre }}</option>
+                    {% for escuela in escuelas %}
+                    <option>{{ escuela.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <div class="form-group">
+                <label class="form-control-label" for="tipo_doc">Tipo de documento</label>
+                <select class="form-control" id="tipo_doc" name="tipo_doc">
+                    <option>{{ tipoDoc }}</option>
+                    {% for tipoDoc in tiposDoc %}
+                    <option>{{ tipoDoc.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="form-group">
+                <label class="form-control-label" for="numero">Número de documento</label>
+                <input type="text" class="form-control" value="{{ estudiante.numero }}" name="numero" id="numero"
+                required>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <label class="form-control-label" for="tel">Teléfono</label>
+            <input type="text" class="form-control" value="{{ estudiante.tel }}" name="tel" id="tel"
+            required>
+        </div>
+        <div class="col-6">
+            <div class="form-group">
+                <label class="form-control-label">Barrio</label>
+                <select class="form-control" id="barrio" name="barrio">
+                    <option>{{ barrio.nombre }}</option>
+                    {% for barrio in barrios %}
+                    <option>{{ barrio.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    <input type="hidden"  value="{{ estudiante.id }}" class="form-control" name="id" id="id">
+    <div class="row">
+        <div class="col-4">
+            <a class="btn btn-danger btn-lg btn-block" href="{{ url_for('home') }}">Cancelar</a>
+        </div>
+        <div class="col-8">
+            <button type="submit" class="btn btn-warning btn-lg btn-block">Actualizar</button>
+        </div>
+    </div>
+</form>
+
+{% endblock %}
+
+{% block footer %}
+{% include 'shared/footer.html' %}
+{% endblock %}
